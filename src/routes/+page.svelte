@@ -27,7 +27,7 @@
     <EditTask visible={showEditTask} />
     <CompleteTask visible={showCompleteTask} />
     <ScheduleTask visible={showScheduleTask} />
-    Search: <input bind:value={searchStr}>
+    <span style='font-weight: bold'>Search:</span> <input bind:value={searchStr}>
     <div class=taskList>
         {#each matchingTasks as t}
             <div transition:fade>
@@ -47,11 +47,13 @@
         font-size: 1.2em;
     }
     .taskList {
-        max-height: 70vh;
+        max-height: 60vh;
         overflow-y: auto;
+        border: 1pt solid black;
     }
     input {
         padding:5pt;
         margin-bottom: 3pt;
+        font-size: 14pt;
     }
 </style>

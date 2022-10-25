@@ -18,6 +18,7 @@
         }
         return newId
     }
+    $: addOrEdit = !!$taskToEdit ? 'edit' : 'add';
     $: task = $taskToEdit || {name: '', history: [], scheduled: [], id: getNewId()};
     const submitFunc = async (event, id) => {
         const { name, history, scheduled } = event.target.elements;
@@ -52,7 +53,7 @@
     }
     let error;
     afterUpdate(() => {
-        if ($visible){  
+        if ($visible && addOrEdit === 'add'){  
             const dp = document.getElementById('name') as HTMLInputElement;
             dp.focus();
         }
@@ -89,5 +90,10 @@
     }
     input {
         padding: 3pt;
+        font-size: 16pt;
+    }
+    label {
+        font-size: 16pt;
+        font-weight: bold;
     }
 </style>

@@ -32,9 +32,3 @@
         <button>Save</button>
     </form>
 </Modal>
-
-<style>
-    .datePicker {
-        padding: 8pt 0pt;
-    }
-</style>
