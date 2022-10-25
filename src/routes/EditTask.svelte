@@ -28,7 +28,6 @@
             scheduled: scheduled.value.split(',').map(x => x.trim()).filter(x => x !== '')
         }
         const result = await editTask(obj, id);
-        console.log(result)
         if (result === 'success'){
             visible.update(() => false);
         }
@@ -60,6 +59,7 @@
     })
 </script>
 
+{task.id}
 <Modal visible={visible}>
     <h2>{task.name.length > 0 ? `Edit task: ${task.name}` : 'Add task'}</h2>
     <form on:submit|preventDefault={(event) => submitFunc(event, task.id)}>

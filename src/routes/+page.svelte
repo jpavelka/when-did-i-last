@@ -36,7 +36,13 @@
         {/each}
     </div>
     <button on:click={() => {
-        taskToEdit.update(() => undefined);
+        taskToEdit.update(t => {
+            if (t === undefined){
+                return null
+            } else {
+                return undefined
+            }
+        });
         showEditTask.update(() => true);
     }}>Add Task</button>
     <button on:click={signOutFunc}>Log Out</button>
