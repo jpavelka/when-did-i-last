@@ -47,6 +47,7 @@
     }
     .taskName {
         font-weight: bold;
+        font-size: 16pt;
     }
     .lastNext {
         margin-left: 0.5em;
