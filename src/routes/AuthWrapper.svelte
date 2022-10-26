@@ -1,6 +1,6 @@
 <script lang="ts">
   import { auth, db, signInFunc } from "$lib/firebase";
-  import { doc, getDoc } from "firebase/firestore";
+  import { doc, onSnapshot } from "firebase/firestore";
   import { tasks } from "$lib/stores";
   import { fade } from "svelte/transition";
   import type { Task } from "$lib/types";
@@ -11,17 +11,16 @@
       const token = await fireUser.getIdTokenResult();
       loggedIn = true;
       const tasksRef = doc(db, "tasks", fireUser.uid);
-      getDoc(tasksRef)
-        .then((docSnap) => {
-          const userTasks = Object.entries(docSnap.data().tasks).map(
-            (x: [string, Task]) => {
-              x[1].id = x[0];
-              return x[1];
-            }
-          );
-          tasks.update(() => userTasks);
-        })
-        .catch((e) => console.log("error", e));
+
+      onSnapshot(tasksRef, (doc) => {
+        const userTasks = Object.entries(doc.data().tasks).map(
+          (x: [string, Task]) => {
+            x[1].id = x[0];
+            return x[1];
+          }
+        );
+        tasks.update(() => userTasks);
+      });
     } else {
       loggedIn = false;
       tasks.update(() => []);

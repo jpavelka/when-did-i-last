@@ -2,9 +2,7 @@
     import Modal from "$lib/Modal.svelte";
     import { fade } from 'svelte/transition';
     import { taskToEdit, tasks } from "$lib/stores";
-    import { auth, db } from "$lib/firebase";
-    import { editTask } from "$lib/db";
-    import { doc, updateDoc, deleteField } from "firebase/firestore";
+    import { editTask, deleteTask } from "$lib/db";
     import { v4 as uuidv4 } from 'uuid';
     import { afterUpdate } from "svelte";
     
@@ -33,22 +31,10 @@
         }
     }
     const deleteFunc = async () => {
-        const doDelete = confirm(`Are you sure you want to delete task "${task.name}"?`);
-        if (!doDelete) {
-            return
-        }
-        let deleteObj = {};
-        deleteObj[`tasks.${task.id}`] = deleteField();
-        await updateDoc(
-            doc(db, 'tasks', `${auth.currentUser.uid}`), deleteObj
-        ).then(() => {
-            tasks.update(ts => ts.filter(t => t.id !== task.id));
+        const result = await deleteTask(task);
+        if (result === 'success'){
             visible.update(() => false);
-            alert('Deletion successful');
-        }).catch(error => {
-            alert('There was an issue completing your request. Please try again later.')
-            console.log(error);
-        });
+        }
     }
     let error;
     afterUpdate(() => {
@@ -59,7 +45,6 @@
     })
 </script>
 
-{task.id}
 <Modal visible={visible}>
     <h2>{task.name.length > 0 ? `Edit task: ${task.name}` : 'Add task'}</h2>
     <form on:submit|preventDefault={(event) => submitFunc(event, task.id)}>
