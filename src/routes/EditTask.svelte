@@ -64,6 +64,7 @@
             {#if task.name.length > 0}
                 <button on:click|preventDefault={deleteFunc}>Delete</button>
             {/if}
+            <button on:click|preventDefault={() => visible.update(() => false)}>Cancel</button>
         </div>
     </form>
 </Modal>

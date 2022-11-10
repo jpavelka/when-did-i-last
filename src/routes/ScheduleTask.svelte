@@ -29,6 +29,9 @@
     <h2>Schedule task: {task.name}</h2>
     <form on:submit|preventDefault={(event) => submitFunc(event)}>
         <input id=scheduleDatePicker class=datePicker name=newComplete type=date value={todayS} required>
-        <button>Save</button>
+        <div>
+            <button>Save</button>
+            <button on:click|preventDefault={() => visible.update(() => false)}>Cancel</button>
+        </div>
     </form>
 </Modal>

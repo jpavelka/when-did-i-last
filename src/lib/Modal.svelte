@@ -1,17 +1,11 @@
 <script lang="ts">
     export let visible;
-    const handleClose = () => {
-        visible.update(() => false);
-    }
 </script>
 
 {#if $visible}
     <div class=modalBackground>
         <div class=modalContent>
             <slot />
-            <div><button
-                on:click={handleClose}
-            >Close</button></div>
         </div>
     </div>
 {/if}

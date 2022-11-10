@@ -9,9 +9,12 @@
     
     $: task = $taskToComplete;
     const submitFunc = async (event) => {
-        const { newComplete } = event.target.elements;
+        const { newComplete, delSchedCheck } = event.target.elements;
         task.history.push(newComplete.value.replaceAll('-', ''));
         task.history.sort((a, b) => a < b ? -1 : 1);
+        if ((delSchedCheck || {}).checked) {
+            task.scheduled = task.scheduled.slice(1);
+        }
         const result = await editTask(task, task.id);
         if (result === 'success') {
             visible.update(() => false);
@@ -44,7 +47,20 @@
         <button on:click|preventDefault={() => setDateValue(todayS)}>Today</button>
         {#if nextSchedS !== undefined}
             <button on:click|preventDefault={() => setDateValue(nextSchedS)}>Scheduled</button>
+            <div class=delCheckContainer>
+                <input id=delSchedCheck type=checkbox checked>
+                <label for=delSchedCheck >Delete earliest date from schedule ({getNextSchedS(task)})</label>
+            </div>
         {/if}
-        <div><button>Save</button></div>
+        <div>
+            <button>Save</button>
+            <button on:click|preventDefault={() => visible.update(() => false)}>Cancel</button>
+        </div>
     </form>
 </Modal>
+
+<style>
+    .delCheckContainer {
+        padding: 10pt 5pt;
+    }
+</style>

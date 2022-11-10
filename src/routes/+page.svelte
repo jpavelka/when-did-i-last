@@ -29,11 +29,15 @@
     <ScheduleTask visible={showScheduleTask} />
     <span style='font-weight: bold'>Search:</span> <input bind:value={searchStr}>
     <div class=taskList>
-        {#each matchingTasks as t}
-            <div transition:fade>
-                <InlineTask task={t} />
-            </div>
-        {/each}
+        {#if matchingTasks.length > 0}
+            {#each matchingTasks as t}
+                <div transition:fade>
+                    <InlineTask task={t} />
+                </div>
+            {/each}
+        {:else}
+            <div transition:fade style='font-style: italic'>No tasks to show</div>
+        {/if}
     </div>
     <button on:click={() => {
         taskToEdit.update(t => {
