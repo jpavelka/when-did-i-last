@@ -23,12 +23,17 @@
     $: matchingTasks = searchFunc($tasks, searchStr);
 </script>
 
-<div class=mainContent>
-    <EditTask visible={showEditTask} />
-    <CompleteTask visible={showCompleteTask} />
-    <ScheduleTask visible={showScheduleTask} />
-    <span style='font-weight: bold'>Search:</span> <input bind:value={searchStr}>
-    <div class=taskList>
+<EditTask visible={showEditTask} />
+<CompleteTask visible={showCompleteTask} />
+<ScheduleTask visible={showScheduleTask} />
+
+<div class="main">
+    <div class="search-row">
+        <label for="search">Search</label>
+        <input id="search" type="text" bind:value={searchStr} placeholder="Filter tasks...">
+    </div>
+
+    <div class="task-list">
         {#if matchingTasks.length > 0}
             {#each matchingTasks as t}
                 <div transition:fade>
@@ -36,34 +41,66 @@
                 </div>
             {/each}
         {:else}
-            <div transition:fade style='font-style: italic'>No tasks to show</div>
+            <div transition:fade class="empty-state">No tasks to show</div>
         {/if}
     </div>
-    <button on:click={() => {
-        taskToEdit.update(t => {
-            if (t === undefined){
-                return null
-            } else {
-                return undefined
-            }
-        });
-        showEditTask.update(() => true);
-    }}>Add Task</button>
-    <button on:click={signOutFunc}>Log Out</button>
+
+    <div class="bottom-bar">
+        <button class="primary" on:click={() => {
+            taskToEdit.update(t => t === undefined ? null : undefined);
+            showEditTask.update(() => true);
+        }}>+ Add Task</button>
+        <button on:click={signOutFunc}>Log Out</button>
+    </div>
 </div>
 
 <style>
-    .mainContent {
-        font-size: 1.2em;
+    .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
     }
-    .taskList {
-        max-height: 60vh;
-        overflow-y: auto;
-        border: 1pt solid black;
+
+    .search-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.75rem;
+        flex-shrink: 0;
     }
+
+    label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--c-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+
     input {
-        padding:5pt;
-        margin-bottom: 3pt;
-        font-size: 14pt;
+        flex: 1;
+    }
+
+    .task-list {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        padding-right: 2px; /* keep box-shadows from clipping */
+    }
+
+    .empty-state {
+        font-style: italic;
+        color: var(--c-muted);
+        padding: 1rem 0;
+    }
+
+    .bottom-bar {
+        display: flex;
+        gap: 0.5rem;
+        padding-top: 0.875rem;
+        flex-shrink: 0;
+        align-items: center;
     }
 </style>

@@ -39,49 +39,118 @@
 </script>
 
 {#await initialUser}
-  Loading...
+  <div class="page">
+    <p class="loading">Loading...</p>
+  </div>
 {:then}
-  <h1>When Did I Last...</h1>
-  {#if loggedIn}
-    <div
-      in:fade={{ duration: transitionTiming, delay: transitionTiming }}
-      out:fade={{ duration: transitionTiming }}
-    >
-      <slot />
-    </div>
-  {:else}
-    <div
-      in:fade={{ duration: transitionTiming, delay: transitionTiming }}
-      out:fade={{ duration: transitionTiming }}
-    >
-      <form on:submit|preventDefault={submitFunc}>
-        <h2>Hello! Please log in.</h2>
-        <div class='formClass'>
-          <label for="email">Email:</label>
-          <input id="email" type="email" />
-          <label for="password">Password:</label>
-          <input id="password" type="password" />
+  <div class="page">
+    <header class="site-header">
+      <h1>When Did I Last...</h1>
+    </header>
+    {#if loggedIn}
+      <div
+        class="content-wrapper"
+        in:fade={{ duration: transitionTiming, delay: transitionTiming }}
+        out:fade={{ duration: transitionTiming }}
+      >
+        <slot />
+      </div>
+    {:else}
+      <div
+        in:fade={{ duration: transitionTiming, delay: transitionTiming }}
+        out:fade={{ duration: transitionTiming }}
+      >
+        <div class="login-card">
+          <form on:submit|preventDefault={submitFunc}>
+            <h2>Please log in</h2>
+            <div class="form-grid">
+              <label for="email">Email</label>
+              <input id="email" type="email" />
+              <label for="password">Password</label>
+              <input id="password" type="password" />
+            </div>
+            {#if error}
+              <div transition:fade class="error-msg">{error.message}</div>
+            {/if}
+            <button type="submit" class="primary">Sign In</button>
+          </form>
         </div>
-        {#if error}
-          <div transition:fade>{error.message}</div>
-        {/if}
-        <div>
-          <button type="submit">Sign In</button>
-        </div>
-      </form>
-    </div>
-  {/if}
+      </div>
+    {/if}
+  </div>
 {:catch}
-  Error encountered - please try again.
+  <div class="page">
+    <p>Error encountered — please try again.</p>
+  </div>
 {/await}
 
 <style>
-    .formClass {
-        display: grid;
-        max-width: 20em;
-    }
-    input {
-        padding: 4pt;
-        margin: 2pt 0;
-    }
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 1rem;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .site-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1.5px solid var(--c-border);
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--c-text);
+  }
+
+  .login-card {
+    background: var(--c-surface);
+    border: 1.5px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    max-width: 340px;
+  }
+
+  .form-grid {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.4rem;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .error-msg {
+    color: var(--c-danger);
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .loading {
+    color: var(--c-muted);
+    font-style: italic;
+  }
 </style>

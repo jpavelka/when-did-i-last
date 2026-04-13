@@ -1,20 +1,107 @@
+:root {
+  --c-primary: #2a6db5;
+  --c-primary-dark: #1e5490;
+  --c-danger: #c0392b;
+  --c-danger-dark: #922b21;
+  --c-bg: #eef1f7;
+  --c-surface: #ffffff;
+  --c-text: #1a1a2e;
+  --c-muted: #6b7280;
+  --c-border: #d1d5db;
+  --c-overdue: #c0392b;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--c-bg);
+  color: var(--c-text);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+  color: var(--c-text);
+}
+
+/* ── Buttons ──────────────────────────────────────── */
+
 button {
-    padding: 8pt;
-    margin: 2pt 0pt;
-    color: black;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    border: 1pt solid black;
-    background-color: #eee;
-    font-weight: normal;
-    font-size: 12pt;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
+
 button:hover {
-    background-color: #ccc;
+  background: #f0f2f5;
 }
-.datePicker {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    font-size: 14pt;
-    padding: 8pt 2pt;
+
+button.primary {
+  background: var(--c-primary);
+  color: white;
+  border-color: var(--c-primary);
+}
+
+button.primary:hover {
+  background: var(--c-primary-dark);
+  border-color: var(--c-primary-dark);
+}
+
+button.danger {
+  background: var(--c-danger);
+  color: white;
+  border-color: var(--c-danger);
+}
+
+button.danger:hover {
+  background: var(--c-danger-dark);
+  border-color: var(--c-danger-dark);
+}
+
+/* ── Inputs ───────────────────────────────────────── */
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"] {
+  font-family: var(--font);
+  font-size: 0.95rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--c-text);
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus {
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px rgba(42, 109, 181, 0.15);
 }

@@ -3,9 +3,9 @@
     import { taskToSchedule } from "$lib/stores";
     import { editTask } from "$lib/db";
     import { afterUpdate } from "svelte";
-    
+
     export let visible;
-    
+
     $: task = $taskToSchedule;
     const submitFunc = async (event) => {
         const { newComplete } = event.target.elements;
@@ -18,7 +18,7 @@
     }
     const todayS = (new Date()).toISOString().slice(0, 10);
     afterUpdate(() => {
-        if ($visible){  
+        if ($visible){
             const dp = document.getElementById('scheduleDatePicker') as HTMLInputElement;
             dp.focus();
         }
@@ -28,10 +28,22 @@
 <Modal visible={visible}>
     <h2>Schedule task: {task.name}</h2>
     <form on:submit|preventDefault={(event) => submitFunc(event)}>
-        <input id=scheduleDatePicker class=datePicker name=newComplete type=date value={todayS} required>
-        <div>
-            <button>Save</button>
+        <input id="scheduleDatePicker" name="newComplete" type="date" value={todayS} required>
+        <div class="button-row">
+            <button type="submit" class="primary">Save</button>
             <button on:click|preventDefault={() => visible.update(() => false)}>Cancel</button>
         </div>
     </form>
 </Modal>
+
+<style>
+    input[type="date"] {
+        width: 100%;
+        margin-bottom: 0.75rem;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 0.5rem;
+    }
+</style>

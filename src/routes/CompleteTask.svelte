@@ -4,9 +4,9 @@
     import { editTask } from "$lib/db";
     import { dateFormat } from "$lib/dateFormat";
     import { afterUpdate } from "svelte";
-    
+
     export let visible;
-    
+
     $: task = $taskToComplete;
     const submitFunc = async (event) => {
         const { newComplete, delSchedCheck } = event.target.elements;
@@ -33,7 +33,7 @@
         dp.value = v;
     }
     afterUpdate(() => {
-        if ($visible){  
+        if ($visible){
             const dp = document.getElementById('completeDatePicker') as HTMLInputElement;
             dp.focus();
         }
@@ -43,24 +43,50 @@
 <Modal visible={visible}>
     <h2>Complete task: {task.name}</h2>
     <form on:submit|preventDefault={(event) => submitFunc(event)}>
-        <input id=completeDatePicker class=datePicker name=newComplete type=date value={todayS} required>
-        <button on:click|preventDefault={() => setDateValue(todayS)}>Today</button>
+        <input id="completeDatePicker" name="newComplete" type="date" value={todayS} required>
+        <div class="quick-btns">
+            <button on:click|preventDefault={() => setDateValue(todayS)}>Today</button>
+            {#if nextSchedS !== undefined}
+                <button on:click|preventDefault={() => setDateValue(nextSchedS)}>Scheduled</button>
+            {/if}
+        </div>
         {#if nextSchedS !== undefined}
-            <button on:click|preventDefault={() => setDateValue(nextSchedS)}>Scheduled</button>
-            <div class=delCheckContainer>
-                <input id=delSchedCheck type=checkbox checked>
-                <label for=delSchedCheck >Delete earliest date from schedule ({getNextSchedS(task)})</label>
+            <div class="del-check">
+                <input id="delSchedCheck" name="delSchedCheck" type="checkbox" checked>
+                <label for="delSchedCheck">Delete earliest date from schedule ({getNextSchedS(task)})</label>
             </div>
         {/if}
-        <div>
-            <button>Save</button>
+        <div class="button-row">
+            <button type="submit" class="primary">Save</button>
             <button on:click|preventDefault={() => visible.update(() => false)}>Cancel</button>
         </div>
     </form>
 </Modal>
 
 <style>
-    .delCheckContainer {
-        padding: 10pt 5pt;
+    input[type="date"] {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-btns {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .del-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+        color: var(--c-muted);
+    }
+
+    .button-row {
+        display: flex;
+        gap: 0.5rem;
     }
 </style>
