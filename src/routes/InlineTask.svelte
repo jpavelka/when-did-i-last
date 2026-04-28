@@ -4,6 +4,11 @@
     export let task;
     const today = new Date();
     const todayS = today.toISOString().slice(0, 10).replaceAll('-', '');
+    const cadenceLabel = (cadence) => {
+        if (!cadence) return '';
+        const u = cadence.value === 1 ? cadence.unit.slice(0, -1) : cadence.unit;
+        return `Every ${cadence.value} ${u}`;
+    };
 </script>
 
 <div class="taskWrapper">
@@ -15,6 +20,9 @@
         <div class="meta" class:overdue={todayS >= task.scheduled[0]}>
             Next: {dateFormat(task.scheduled[0])}
         </div>
+    {/if}
+    {#if task.cadence}
+        <div class="meta cadence">{cadenceLabel(task.cadence)}</div>
     {/if}
     <div class="actions">
         <button on:click={() => {
@@ -57,6 +65,10 @@
     .overdue {
         color: var(--c-overdue);
         font-weight: 500;
+    }
+
+    .cadence {
+        font-style: italic;
     }
 
     .actions {

@@ -4,8 +4,9 @@
     import { taskToEdit, tasks } from "$lib/stores";
     import { editTask, deleteTask } from "$lib/db";
     import { dateFormat } from "$lib/dateFormat";
+    import type { CadenceUnit } from "$lib/types";
     import { v4 as uuidv4 } from 'uuid';
-    import { afterUpdate } from "svelte";
+    import { afterUpdate, beforeUpdate } from "svelte";
 
     export let visible;
 
@@ -26,6 +27,22 @@
 
     let scheduledDates: string[] = [];
     $: scheduledDates = [...(task.scheduled || [])];
+
+    let cadenceEnabled: boolean = false;
+    let cadenceValue: number = 1;
+    let cadenceUnit: CadenceUnit = 'weeks';
+    // Track task identity so cadence fields are initialized once per task load,
+    // not on every reactive update (which would fight bind:checked).
+    let _cadenceInitKey: string = '';
+    beforeUpdate(() => {
+        const key = addOrEdit + ':' + (task?.id ?? '');
+        if (key !== _cadenceInitKey) {
+            _cadenceInitKey = key;
+            cadenceEnabled = !!(task?.cadence);
+            cadenceValue = task?.cadence?.value ?? 1;
+            cadenceUnit = task?.cadence?.unit ?? 'weeks';
+        }
+    });
 
     let newHistoryStr = '';
     let newScheduledStr = '';
@@ -54,8 +71,8 @@
         newHistoryStr = '';
     };
 
-    const removeHistory = (d: string) => {
-        historyDates = historyDates.filter(x => x !== d);
+    const removeHistory = (idx: number) => {
+        historyDates = historyDates.filter((_, j) => j !== idx);
     };
 
     const addScheduled = () => {
@@ -67,8 +84,8 @@
         newScheduledStr = '';
     };
 
-    const removeScheduled = (d: string) => {
-        scheduledDates = scheduledDates.filter(x => x !== d);
+    const removeScheduled = (idx: number) => {
+        scheduledDates = scheduledDates.filter((_, j) => j !== idx);
     };
 
     const submitFunc = async (event, id) => {
@@ -81,6 +98,7 @@
             name: name.value,
             history: historyDates,
             scheduled: scheduledDates,
+            cadence: cadenceEnabled ? { value: cadenceValue, unit: cadenceUnit } : null,
         }, id);
         if (result === 'success'){
             visible.update(() => false);
@@ -112,14 +130,14 @@
                 <div class="date-section" class:warn={showPendingWarning && !!newHistoryStr}>
                     {#if historyDates.length > 0}
                         <ul class="date-list">
-                            {#each [...historyDates].reverse() as d (d)}
+                            {#each [...historyDates].reverse() as d, i (i)}
                                 <li class="date-item">
                                     <span>{dateFormat(d)}</span>
                                     <button
                                         type="button"
                                         class="remove-btn"
                                         aria-label="Remove {dateFormat(d)}"
-                                        on:click={() => removeHistory(d)}
+                                        on:click={() => removeHistory(historyDates.length - 1 - i)}
                                     >×</button>
                                 </li>
                             {/each}
@@ -140,14 +158,14 @@
                 <div class="date-section" class:warn={showPendingWarning && !!newScheduledStr}>
                     {#if scheduledDates.length > 0}
                         <ul class="date-list">
-                            {#each scheduledDates as d (d)}
+                            {#each scheduledDates as d, i (i)}
                                 <li class="date-item">
                                     <span>{dateFormat(d)}</span>
                                     <button
                                         type="button"
                                         class="remove-btn"
                                         aria-label="Remove {dateFormat(d)}"
-                                        on:click={() => removeScheduled(d)}
+                                        on:click={() => removeScheduled(i)}
                                     >×</button>
                                 </li>
                             {/each}
@@ -163,6 +181,31 @@
                         {/if}
                     </div>
                 </div>
+
+            <label>Cadence</label>
+            <div class="cadence-section">
+                <label class="cadence-toggle">
+                    <input type="checkbox" bind:checked={cadenceEnabled} />
+                    Auto-prompt to reschedule after completion
+                </label>
+                {#if cadenceEnabled}
+                    <div class="cadence-row">
+                        <span class="cadence-prefix">Every</span>
+                        <input
+                            type="number"
+                            min="1"
+                            class="cadence-value"
+                            bind:value={cadenceValue}
+                        />
+                        <select bind:value={cadenceUnit} class="cadence-unit">
+                            <option value="days">day{cadenceValue === 1 ? '' : 's'}</option>
+                            <option value="weeks">week{cadenceValue === 1 ? '' : 's'}</option>
+                            <option value="months">month{cadenceValue === 1 ? '' : 's'}</option>
+                            <option value="years">year{cadenceValue === 1 ? '' : 's'}</option>
+                        </select>
+                    </div>
+                {/if}
+            </div>
         </div>
 
         {#if error}
@@ -270,6 +313,50 @@
 
     .date-section.warn {
         border-color: var(--c-danger);
+    }
+
+    /* ── Cadence ── */
+
+    .cadence-section {
+        border: 1.5px solid var(--c-border);
+        border-radius: 6px;
+        padding: 0.5rem 0.625rem;
+        background: var(--c-bg);
+    }
+
+    .cadence-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.9rem;
+        font-weight: normal;
+        color: var(--c-text);
+        text-transform: none;
+        letter-spacing: normal;
+        margin-top: 0;
+        cursor: pointer;
+    }
+
+    .cadence-row {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 0.5rem;
+    }
+
+    .cadence-prefix {
+        font-size: 0.9rem;
+        color: var(--c-muted);
+        white-space: nowrap;
+    }
+
+    .cadence-value {
+        width: 4rem;
+        flex-shrink: 0;
+    }
+
+    .cadence-unit {
+        flex: 1;
     }
 
     /* ── Form actions ── */

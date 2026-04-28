@@ -6,8 +6,8 @@ export const editTask = async (taskData: Task, taskId: string) => {
     const docData = {
         'tasks': {}
     }
-    delete taskData.id;
-    docData.tasks[taskId] = taskData;
+    const { id: _omit, ...taskWithoutId } = taskData;
+    docData.tasks[taskId] = taskWithoutId;
     const userId = getUserId();
     const result = await setDoc(
         doc(db, 'tasks', userId), docData, {merge: true}
